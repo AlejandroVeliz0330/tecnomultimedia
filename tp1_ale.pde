@@ -109,9 +109,11 @@ void draw() {
     //
   } else if (estado.equals("p5") ) {  
     image(p6, 0, 0);
-    textSize(25);
-    text("gracias por tu atencion", 320, 80);
-    text("reiniciar", 320, 140);
+    textSize(45);
+    fill (255);
+    text("gracias por tu atencion", 320, 45);
+    textSize(30);
+    text("pulse el boton \n para reiniciar ", 320, 130);
     fill(237, 29, 29);
     rect( 270, 190, 100, 60);
        
