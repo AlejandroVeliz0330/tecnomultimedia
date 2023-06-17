@@ -1,3 +1,5 @@
+//link al video:https://www.youtube.com/watch?v=l2cUGPgPRGs
+
 float xPos = 400; // Posición inicial de los rombos 1
 float xvel = 2; // Velocidad de movimiento de los rombos 1
 float xPos2 = 400; // Posición inicial de los rombos 2
