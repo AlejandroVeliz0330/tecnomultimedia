@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aventura Gráfica</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 900px;
+      margin: 0;
+      font-family: 'Georgia', serif;
+      /* Selecciona la fuente Georgia */
+    }
+
+    canvas {
+      display: block;
+      margin: auto;
+    }
+  </style>
+</head>
+
+<body>
+  <script>
+    let Aventura;
+    let textos = [];
+    let juego;
+    let cuadro;
+
+    function preload() {
+      // Carga el archivo de texto al inicio del programa
+
+      textos = loadStrings('textos.txt');
+    }
+
+    function setup() {
+      createCanvas(1280, 900);
+      let cuadro = loadImage('cuadroDiana.png');
+      juego = new miniJuego(cuadro);
+      Aventura = new AventuraGrafica();
+    }
+
+    function mouseMoved() {
+      if (juego) {
+        juego.apuntar();
+      }
+    }
+
+    function draw() {
+      background(246, 240, 227);
+      Aventura.actualizar();
+      Aventura.mostrar();
+    }
+
+    function mousePressed() {
+      Aventura.mousePressed();
+      juego.disparar();
+
+    }
+    function keyPressed() {
+      if (keyCode === ENTER) {
+        juego.iniciar();
+      } else if (key === 'r' || key === 'R') {
+        reiniciarPrograma();
+      }
+    }
+
+    function reiniciarPrograma() {
+      // Reiniciar la aventura
+      Aventura.estado = 0;
+
+      // Reiniciar el mini juego
+      juego.reiniciar();
+    }
+
+    class AventuraGrafica {
+      constructor() {
+        this.estado = 0;
+        this.pantallas = [
+          new Pantalla("Menú Principal", "menu.png", [
+            new BotonSiguiente(1280 / 2, 700, "Jugar", 1),
+          ]),
+          new Pantalla("", "P1.jpeg", [
+            new BotonesDobles(1280 / 2, 720 - 50, 2, 3),
+          ], 0, 8),
+          new Pantalla("Pantalla 2", "P2.jpeg", [
+            new BotonSiguiente(1280 / 2, 720 - 50, "siguiente", 4),
+          ], 8, 10),
+          new Pantalla("Pantalla 3", "P3.jpeg", [
+            new BotonSiguiente(1280 / 2, 720 - 50, "siguiente", 4),
+          ], 10, 12),
+          new Pantalla("", "P4.jpg", [
+            new BotonesDobles(1280 / 2, 720 - 50, 5, 6),
+          ], 12, 19),
+          new Pantalla("Pantalla 5", "P5.jpg", [
+            new BotonSiguiente(1280 / 2, 720 - 50, "siguiente", 7),
+          ], 19, 21),
+          new Pantalla("Pantalla 6", "P6.jpg", [
+            new BotonSiguiente(1280 / 2, 720 - 50, "siguiente", 7),
+          ], 21, 23),
+          new Pantalla("", "P7.jpg", [
+            new BotonSiguiente(1280 / 2, 720 - 50, "siguiente", 8),
+          ], 23, 28),
+          new Pantalla("", "", [
+          ]),
+          new Pantalla("Pantalla 9", "P8.jpg", [
+            new BotonSiguiente(1280 / 2, 720 - 50, "siguiente", 11),
+          ], 28, 30),
+          new Pantalla("Pantalla 10", "P9.jpg", [
+            new BotonSiguiente(1280 / 2, 720 - 50, "siguiente", 11),
+          ], 30, 32),
+          new Pantalla("Pantalla 11", "P10.jpg", [
+            new BotonesDobles(1280 / 2, 720 - 50, 12, 13),
+          ], 33, 41),
+          new Pantalla("Pantalla 12", "P11.jpg", [
+            new BotonSiguiente(1280 / 2, 720 - 50, "presiona R para \nvolver a empezar", 0),
+          ], 41, 43),
+          new Pantalla("Pantalla 13", "P12.jpg", [
+            new BotonSiguiente(1280 / 2, 720 - 50, "siguiente", 14),
+          ], 43, 45),
+          new Pantalla("Pantalla 14", "P13.jpg", [
+            new BotonesDobles(1280 / 2, 720 - 50, 15, 16),
+          ], 45, 53),
+          new Pantalla("Pantalla 15", "P14.jpg", [
+            new BotonSiguiente(1280 / 2, 720 - 50, "siguiente", 17),
+          ], 53, 54),
+          new Pantalla("Pantalla 16", "P15.jpg", [
+            new BotonSiguiente(1280 / 2, 720 - 50, "siguiente", 17),
+          ], 54, 56),
+          new Pantalla("Pantalla 17", "P16.jpg", [
+            new BotonesDobles(1280 / 2, 720 - 50, 18, 19),
+          ], 56, 64),
+          new Pantalla("Pantalla 18", "P17.jpg", [
+            new BotonSiguiente(1280 / 2, 720 - 50, "siguiente", 20),
+          ], 64, 66),
+          new Pantalla("Pantalla 19", "P18.jpg", [
+            new BotonSiguiente(1280 / 2, 720 - 50, "presiona R para \nvolver a empezar", 0),
+          ], 66, 68),
+          new Pantalla("Pantalla 20", "P19.jpg", [
+            new BotonesDobles(1280 / 2, 720 - 50, 21, 22),
+          ], 68, 76),
+          new Pantalla("Pantalla 21", "P20.jpg", [
+            new BotonSiguiente(1280 / 2, 720 - 50, "presiona R para \nvolver a empezar", 0),
+          ], 76, 78),
+          new Pantalla("Pantalla 22", "P21.jpg", [
+            new BotonSiguiente(1280 / 2, 720 - 50, "presiona R para \nvolver a empezar", 0),
+          ], 78, 80),
+        ];
+      }
+
+      actualizar() {
+        if (this.estado !== 8) {
+          // Aquí puedes colocar lógica adicional si es necesario para otros estados
+        } else if (this.estado === juego && juego.estado === "menu") {
+          juego.iniciar();
+        }
+      }
+
+      mostrar() {
+        if (this.estado !== 8) {
+          console.log("Estado de la pantalla:", this.estado);  // Agrega esta línea
+          this.pantallas[this.estado].mostrar();
+        } else {
+          juego.ejecutar();
+        }
+      }
+
+      mousePressed() {
+        if (this.estado !== 8) {
+          this.pantallas[this.estado].mousePressed();
+        } else {
+          juego.apuntar();
+        }
+      }
+    }
+
+
+    class Pantalla {
+      constructor(nombre, imagen, elementos, inicioTexto, finTexto) {
+        this.nombre = nombre;
+        this.img = loadImage(imagen);
+        this.elementos = elementos;
+        this.inicioTexto = inicioTexto;
+        this.finTexto = finTexto;
+      }
+
+      actualizar() {
+
+      }
+
+      mostrar() {
+        let anchoImagen = 1280;
+        let altoImagen = (this.img.height / this.img.width) * anchoImagen;
+
+        let xImagen = (width - anchoImagen) / 2;
+        let yImagen = (height - altoImagen) / 2;
+
+        // Si la pantalla no es el Menú Principal, ajusta el tamaño de la imagen
+        if (this.nombre !== "Menú Principal") {
+          anchoImagen *= 1;
+          altoImagen *= 0.7;
+        }
+
+        image(this.img, 0, 0, anchoImagen, altoImagen);
+
+        // Muestra el texto correspondiente a la pantalla actual
+        fill(0);
+        textSize(23);
+        textAlign(LEFT);
+
+        let xTexto = 20;
+        let yTexto = 475;
+
+        for (let i = this.inicioTexto; i < this.finTexto; i++) {
+          let anchoTexto = textWidth(textos[i]);
+
+          text(textos[i], xTexto, yTexto);
+          yTexto += 30;
+        }
+
+        for (let elemento of this.elementos) {
+          elemento.mostrar();
+        }
+      }
+
+      mousePressed() {
+        for (let elemento of this.elementos) {
+          if (elemento.sobreElemento()) {
+            elemento.interactuar();
+          }
+        }
+      }
+    }
+
+    class BotonSiguiente {
+      constructor(x, y, etiqueta, estadoSiguiente) {
+        this.x = x;
+        this.y = y + 75;
+        this.etiqueta = etiqueta;
+        this.ancho = 200;
+        this.alto = 100;
+        this.estadoSiguiente = estadoSiguiente;
+      }
+
+      mostrar() {
+        stroke(93, 66, 48);
+        fill(125, 113, 97);
+        rectMode(CENTER);
+        rect(this.x, this.y, this.ancho, this.alto);
+        fill(256);
+        textSize(25);
+        textAlign(CENTER, CENTER);
+        text(this.etiqueta, this.x, this.y);
+      }
+
+      sobreElemento() {
+        return (
+          mouseX > this.x - this.ancho / 2 &&
+          mouseX < this.x + this.ancho / 2 &&
+          mouseY > this.y - this.alto / 2 &&
+          mouseY < this.y + this.alto / 2
+        );
+      }
+
+      interactuar() {
+        Aventura.estado = this.estadoSiguiente;
+      }
+    }
+
+    class BotonesDobles {
+      constructor(x, y, estadoA, estadoB) {
+        this.x = x;
+        this.y = y - 100;
+        this.botonA = new BotonSiguiente(this.x - 240, this.y + 150, "A", estadoA);
+        this.botonB = new BotonSiguiente(this.x + 240, this.y + 150, "B", estadoB);
+      }
+
+      mostrar() {
+        this.botonA.mostrar();
+        this.botonB.mostrar();
+      }
+
+      sobreElemento() {
+        return this.botonA.sobreElemento() || this.botonB.sobreElemento();
+      }
+
+      interactuar() {
+        if (this.botonA.sobreElemento()) {
+          Aventura.estado = this.botonA.estadoSiguiente;
+        } else if (this.botonB.sobreElemento()) {
+          Aventura.estado = this.botonB.estadoSiguiente;
+        }
+      }
+    }
+
+    class Diana {
+      constructor(x, y, radio, puntos, colorDiana, miniJuego) {
+        this.x = x;
+        this.y = y;
+        this.radio = radio;
+        this.puntos = puntos;
+        this.visible = true;
+        this.color = colorDiana;
+        this.miniJuego = miniJuego;  // Agrega una referencia a miniJuego
+      }
+
+      mostrar() {
+        if (this.visible) {
+          fill(this.color);
+          stroke(255, 0, 0);
+          ellipse(this.x, this.y, this.radio * 2);
+        }
+      }
+
+      hit(x, y) {
+        let d = dist(x, y, this.x, this.y);
+        return d < this.radio;
+      }
+
+      mover() {
+        this.x += this.miniJuego.dianaSpeed;
+      }
+
+      rebotar() {
+        if (this.x + this.radio > width || this.x - this.radio < 0) {
+          this.miniJuego.dianaSpeed *= -1;
+        }
+      }
+    }
+    class miniJuego {
+      constructor(cuadro) {
+        this.dianas = [];
+        this.puntos = 0;
+        this.dianaX = width / 2;
+        this.dianaY = height / 2;
+        this.dianaRadioBase = 100;
+        this.numDianas = 4;
+        this.dianaSpeed = 6;
+        this.tiempoMaximo = 30;
+        this.tiempoRestante = 0;
+        this.reticula = new Reticula();
+        this.coloresDianas = [255, color(0, 191, 255), color(255, 0, 0), color(255, 255, 0)];
+        this.tiempoInicio = 0;
+        this.fondo = loadImage('fondominijuego.png');
+        this.cuadro = cuadro;
+        this.cuadroX = 0;
+        this.estado = "menu";
+      }
+
+      iniciar() {
+        this.tiempoInicio = millis();
+        this.tiempoRestante = this.tiempoMaximo * 1000;
+        this.dianas = [];
+
+        let radio = this.dianaRadioBase;
+        for (let i = 0; i < this.numDianas; i++) {
+          let puntosCirculo = i + 1;
+          this.dianas.push(new Diana(this.dianaX, this.dianaY, radio, puntosCirculo, this.coloresDianas[i], this));
+          radio -= this.dianaRadioBase / this.numDianas;
+        }
+
+        this.estado = "juego";
+      }
+      mousePressed() {
+        if (this.estado === "juego") {
+          Aventura.mousePressed();
+          this.disparar();
+        }
+      }
+
+      apuntar() {
+        this.reticula.apuntar();
+      }
+
+      disparar() {
+        for (let i = this.dianas.length - 1; i >= 0; i--) {
+          if (this.dianas[i].hit(this.reticula.x, this.reticula.y) && this.dianas[i].visible) {
+            this.puntos += this.dianas[i].puntos;
+          }
+        }
+      }
+
+      actualizar() {
+        let tiempoTranscurrido = millis() - this.tiempoInicio;
+        this.tiempoRestante = max(this.tiempoMaximo * 1000 - tiempoTranscurrido, 0);
+
+        if (this.tiempoRestante <= 0) {
+          Aventura.estado = 10;  // Cambia al estado de pantalla de perder
+        }
+
+        if (this.puntos >= 1000) {
+          Aventura.estado = 9;  // Cambia al estado de pantalla de ganar
+        }
+
+        for (let i = 0; i < this.dianas.length; i++) {
+          this.dianas[i].mover();
+          this.dianas[i].rebotar();
+        }
+      }
+
+      reiniciar() {
+        this.puntos = 0;
+        this.tiempoRestante = this.tiempoMaximo * 1000;
+        this.tiempoInicio = millis();
+        // Restablecer otras variables y configuraciones necesarias
+        this.estado = "menu";
+      }
+
+
+      mostrar() {
+        console.log("Estado de la pantalla:", this.estado);  // Agrega esta línea
+        textSize(24);
+        fill(0, 255, 0);
+        text('Puntuación: ' + this.puntos, 200, 30);
+        let segundosRestantes = ceil(this.tiempoRestante / 1000);
+        fill(0, 255, 0);
+        text('Tiempo restante: ' + segundosRestantes + 's', width - 250, 30);
+
+        // Ajusta la posición de las dianas en función de cuadroX
+        let dianaY = height - this.cuadro.height / 2;
+        for (let i = 0; i < this.dianas.length; i++) {
+          this.dianas[i].x = this.cuadroX + this.cuadro.width / 2;
+          this.dianas[i].y = dianaY;
+          this.dianas[i].mostrar();
+        }
+
+        this.reticula.mostrar();
+      }
+
+      ejecutar() {
+        switch (this.estado) {
+          case "menu":
+            this.mostrarMenu();
+            break;
+          case "juego":
+            this.juego();
+            break;
+        }
+      }
+
+      juego() {
+
+        // Renderizar imágenes con image() para aprovechar optimizaciones
+        image(this.fondo, 0, 0, width, height);
+        this.cuadroX += this.dianaSpeed;
+        if (this.cuadroX > width) {
+          this.cuadroX = -this.cuadro.width;
+        }
+        image(this.cuadro, this.cuadroX, height - this.cuadro.height, this.cuadro.width + 25, this.cuadro.height - 50);
+        this.actualizar();
+        this.mostrar();
+
+      }
+      mostrarMenu() {
+        background(210, 175, 127);
+        textSize(48);
+        fill(255);
+        text('Presiona Enter para comenzar', width / 2, height / 2);
+        textSize(36);
+        text('el minijuego es un shooter donde hay una retícula que \nsigue el movimiento del mouse y con la que deberás \napuntar a una diana en movimiento y disparar con \nel click izquierdo para obtener puntos. Ganas si\nconsigues 1000 puntos antes de que termine el \ntiempo o de lo contrario pierdes', width / 2, 200);
+      }
+
+    }
+    class Reticula {
+      constructor() {
+        this.x = mouseX;
+        this.y = mouseY;
+        this.size = 20;
+        this.apuntando = false;
+      }
+
+      apuntar() {
+        this.x = mouseX;
+        this.y = mouseY;
+        this.apuntando = true;
+      }
+
+      mostrar() {
+        noFill();
+        stroke(255, 0, 0);
+        ellipse(this.x, this.y, this.size);
+        line(this.x - this.size, this.y, this.x + this.size, this.y);
+        line(this.x, this.y - this.size, this.x, this.y + this.size);
+      }
+    }
+  </script>
+</body>
+
+</html>
